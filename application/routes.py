@@ -99,19 +99,5 @@ class User(db.Document):
 
 @app.route("/user")
 def user():
-    # User(
-    #     user_id=1,
-    #     first_name="Christian",
-    #     last_name="Hur",
-    #     email="christian@uta.com",
-    #     password="abc1234",
-    # ).save()
-    # User(
-    #     user_id=2,
-    #     first_name="Mary",
-    #     last_name="Jane",
-    #     email="mary.jane@uta.com",
-    #     password="password123",
-    # ).save()
     users = User.objects.all()
     return render_template("user.html", users=users)
