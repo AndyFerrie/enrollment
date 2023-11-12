@@ -1,6 +1,8 @@
 from flask import Response, json, render_template, request
 from application import app
 from application.models import User
+from application.forms import LoginForm
+
 
 courseData = [
     {
@@ -48,9 +50,10 @@ def index():
     return render_template("index.html", index=True)
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template("login.html", login=True)
+    form = LoginForm()
+    return render_template("login.html", title="Login", form=form, login=True)
 
 
 @app.route("/courses/")
