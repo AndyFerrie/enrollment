@@ -2,7 +2,7 @@ from flask import Response, flash, json, redirect, render_template, request, url
 
 from application import app
 from application.forms import LoginForm, RegisterForm
-from application.models import User, Course
+from application.models import User, Course, Enrollment
 
 courseData = [
     {
@@ -103,15 +103,63 @@ def register():
     return render_template("register.html", title="Register", form=form, register=True)
 
 
+
 @app.route("/enrollment", methods=["GET", "POST"])
 def enrollment():
-    id = request.form["courseID"]
-    title = request.form["title"]
-    term = request.form["term"]
+    courseID = request.form.get("courseID")
+    courseTitle = request.form.get("title")
+    user_id = 1 
+
+    if courseID:
+        if Enrollment.objects(user_id = user_id, courseID = courseID):
+            flash(f"Oops! You are already registered in {courseTitle}!", "danger")
+            return redirect(url_for("courses"))
+        else:
+            Enrollment(user_id = user_id, courseID = courseID)
+            flash(f"You are enrolled in {courseTitle}!", "success")
+
+    classes = list( User.objects.aggregate(*[
+            {
+                '$lookup': {
+                    'from': 'enrollment', 
+                    'localField': 'user_id', 
+                    'foreignField': 'user_id', 
+                    'as': 'r1'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$r1', 
+                    'includeArrayIndex': 'r1_id', 
+                    'preserveNullAndEmptyArrays': False
+                }
+            }, {
+                '$lookup': {
+                    'from': 'course', 
+                    'localField': 'r1.courseID', 
+                    'foreignField': 'courseID', 
+                    'as': 'r2'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$r2', 
+                    'preserveNullAndEmptyArrays': False
+                }
+            }, {
+                '$match': {
+                    'user_id': user_id
+                }
+            }, {
+                '$sort': {
+                    'courseID': 1
+                }
+            }
+]))
+
     return render_template(
         "enrollment.html",
         enrollment=True,
-        data={"id": id, "title": title, "term": term},
+        title="Enrollment",
+        classes=classes
     )
 
 
