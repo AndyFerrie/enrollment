@@ -1,4 +1,4 @@
-from flask import Response, json, render_template, request
+from flask import Response, json, render_template, request, flash, redirect
 from application import app
 from application.models import User
 from application.forms import LoginForm
@@ -53,6 +53,13 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        if request.form.get("email") == "test@uta.com":
+            flash("You are successfully logged in!", "success")
+            return redirect("/index")
+        else:
+            flash("Sorry, something went wrong.", "danger")
+
     return render_template("login.html", title="Login", form=form, login=True)
 
 
