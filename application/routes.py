@@ -1,4 +1,4 @@
-from flask import Response, flash, json, redirect, render_template, request, url_for
+from flask import Response, flash, json, redirect, render_template, request, url_for, session
 
 from application import app
 from application.forms import LoginForm, RegisterForm
@@ -52,6 +52,9 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if session.get('username'):
+        return redirect(url_for("index"))
+
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -60,6 +63,8 @@ def login():
         user = User.objects(email=email).first()
         if user and user.get_password(password):
             flash(f"{user.first_name}, you are successfully logged in!", "success")
+            session['user_id'] = user.user_id
+            session['username'] = user.first_name
             return redirect("/index")
         else:
             flash("Sorry, something went wrong.", "danger")
@@ -82,6 +87,9 @@ def courses(term = None):
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if session.get('username'):
+        return redirect(url_for("index"))
+        
     form = RegisterForm()
     if form.validate_on_submit():
         user_id = User.objects.count()
