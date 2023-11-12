@@ -2,7 +2,7 @@ from flask import Response, flash, json, redirect, render_template, request, url
 
 from application import app
 from application.forms import LoginForm, RegisterForm
-from application.models import User
+from application.models import User, Course
 
 courseData = [
     {
@@ -69,9 +69,14 @@ def login():
 
 @app.route("/courses/")
 @app.route("/courses/<term>")
-def courses(term="Spring 2019"):
+def courses(term = None):
+    if term is None:
+        term = "Spring 2019"
+
+    classes = Course.objects.order_by("courseID")
+
     return render_template(
-        "courses.html", courseData=courseData, courses=True, term=term
+        "courses.html", courseData=classes, courses=True, term=term
     )
 
 
