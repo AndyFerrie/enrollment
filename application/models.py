@@ -7,13 +7,13 @@ class User(db.Document):
     email = db.StringField(max_length=30)
     password = db.StringField(max_length=30)
 
-class Course(db.document):
-    course_id = db.Stringfield(max_length=10, unique=True)
+class Course(db.Document):
+    course_id = db.StringField(max_length=10, unique=True)
     title = db.StringField(max_length=100)
-    description = db.Stringfield(maxlength=255)
+    description = db.StringField(maxlength=255)
     credits = db.IntField()
     term = db.StringField(max_length=25)
 
-class Enrollment(db.document):
+class Enrollment(db.Document):
     user_id = db.IntField()
     course_id = db.StringField(max_length=10)
