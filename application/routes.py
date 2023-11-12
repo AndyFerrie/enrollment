@@ -115,7 +115,7 @@ def enrollment():
             flash(f"Oops! You are already registered in {courseTitle}!", "danger")
             return redirect(url_for("courses"))
         else:
-            Enrollment(user_id = user_id, courseID = courseID)
+            Enrollment(user_id = user_id, courseID = courseID).save()
             flash(f"You are enrolled in {courseTitle}!", "success")
 
     classes = list( User.objects.aggregate(*[
@@ -152,8 +152,9 @@ def enrollment():
                 '$sort': {
                     'courseID': 1
                 }
-            }
-]))
+            },
+    ]))
+
 
     return render_template(
         "enrollment.html",
